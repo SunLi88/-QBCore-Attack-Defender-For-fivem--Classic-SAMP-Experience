@@ -1,7 +1,3 @@
-# -QBCore-Attack-Defender-For-fivem--Classic-SAMP-Experience
-Since I couldn't find a lightweight Attack &amp; Defender mode that felt like the old-school SAMP experience, I decided to build my own from scratch for QBCore.
-
-
 # Attack & Defend — v2.0
 
 Clean rewrite. No leftover bugs from v1. Full English.
