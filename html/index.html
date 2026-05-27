@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attack &amp; Defend</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════ HUD ═══════════════════ -->
+<div id="hud" class="hidden">
+
+  <div id="hud-header">
+    <div class="team-score atk-side">
+      <span class="team-label atk">ATK</span>
+      <span id="score-atk" class="score-num">0</span>
+    </div>
+    <div id="round-info">
+      <div id="round-label">ROUND</div>
+      <div id="round-num">1 / 3</div>
+      <div id="round-timer">3:00</div>
+    </div>
+    <div class="team-score def-side">
+      <span id="score-def" class="score-num">0</span>
+      <span class="team-label def">DEF</span>
+    </div>
+  </div>
+
+  <div id="cap-bar-wrap" class="hidden">
+    <div id="cap-label">CAPTURING OBJECTIVE</div>
+    <div id="cap-bar-bg"><div id="cap-bar-fill"></div></div>
+  </div>
+
+  <div id="team-panel-left">
+    <div class="team-title atk-color">⚔ ATTACKERS</div>
+    <div id="atk-list"></div>
+  </div>
+
+  <div id="team-panel-right">
+    <div class="team-title def-color">🛡 DEFENDERS</div>
+    <div id="def-list"></div>
+  </div>
+
+  <div id="kd-panel">
+    <div class="kd-row">
+      <span class="kd-lbl">KILLS</span>
+      <span id="kd-kills" class="kd-val kd-kills">0</span>
+    </div>
+    <div class="kd-row">
+      <span class="kd-lbl">DEATHS</span>
+      <span id="kd-deaths" class="kd-val kd-deaths">0</span>
+    </div>
+    <div class="kd-div"></div>
+    <div class="kd-row">
+      <span class="kd-lbl">EXP</span>
+      <span id="kd-exp" class="kd-val kd-exp">0</span>
+    </div>
+  </div>
+
+  <div id="kill-feed"></div>
+  <div id="round-notif" class="hidden"></div>
+
+  <div id="spectate-bar" class="hidden">
+    <span>👁 SPECTATING:</span>
+    <span id="spectate-name">—</span>
+    <span class="spec-hint">[Q] Prev &nbsp;[E] Next</span>
+  </div>
+
+  <div id="obj-hint" class="hidden">
+    <div class="obj-dot"></div>
+    <span>Stay in zone to capture</span>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ MENU ═══════════════════ -->
+<div id="menu" class="hidden">
+  <div id="menu-bg"></div>
+  <div id="menu-panel">
+
+    <div id="menu-header">
+      <div class="logo">⚔ ATTACK <span class="amp">&amp;</span> DEFEND</div>
+      <button id="btn-close" onclick="UI.closeMenu()">✕</button>
+    </div>
+
+    <div id="menu-tabs">
+      <button class="tab active" data-tab="join">JOIN</button>
+      <button class="tab" data-tab="leaderboard">RANKING</button>
+      <button class="tab" data-tab="info">INFO</button>
+    </div>
+
+    <div id="tab-join" class="tab-content">
+      <div id="team-cards">
+        <div class="team-card atk-card" onclick="UI.joinTeam(1)">
+          <div class="card-icon">⚔</div>
+          <div class="card-name atk-color">ATTACKERS</div>
+          <div class="card-desc">Capture the enemy objective</div>
+          <div class="card-count" id="cnt-atk">0 players</div>
+          <button class="join-btn atk-btn">JOIN</button>
+        </div>
+        <div class="team-card def-card" onclick="UI.joinTeam(2)">
+          <div class="card-icon">🛡</div>
+          <div class="card-name def-color">DEFENDERS</div>
+          <div class="card-desc">Protect the objective until time runs out</div>
+          <div class="card-count" id="cnt-def">0 players</div>
+          <button class="join-btn def-btn">JOIN</button>
+        </div>
+      </div>
+      <button id="leave-btn" onclick="UI.leaveGame()">LEAVE MATCH</button>
+    </div>
+
+    <div id="tab-leaderboard" class="tab-content hidden">
+      <table id="lb-table">
+        <thead>
+          <tr><th>#</th><th>Player</th><th>Kills</th><th>Deaths</th><th>Matches</th></tr>
+        </thead>
+        <tbody id="lb-body">
+          <tr><td colspan="5" style="text-align:center;opacity:.5">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-info" class="tab-content hidden">
+      <div class="info-block">
+        <h3>How to Play</h3>
+        <ul>
+          <li><b>Attackers</b>: Go to the marked objective zone and stay inside to capture it.</li>
+          <li><b>Defenders</b>: Eliminate all attackers or prevent the capture before time runs out.</li>
+          <li>The team with the most round wins takes the match.</li>
+          <li>Leaving the zone cancels any ongoing capture.</li>
+        </ul>
+        <h3>Controls</h3>
+        <ul>
+          <li><b>[F5]</b> — Open / close this menu</li>
+          <li>Objective zone is automatic — stay inside as an attacker</li>
+        </ul>
+        <h3>EXP Rewards</h3>
+        <ul>
+          <li>+50 EXP per kill</li>
+          <li>+100 EXP for winning a round</li>
+          <li>+20 EXP for losing a round</li>
+          <li>+50 EXP for a draw</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ ROUND END ═══════════════════ -->
+<div id="round-end" class="hidden">
+  <div id="re-box">
+    <div id="re-winner"></div>
+    <div id="re-score">
+      <span id="re-atk" class="re-sc atk-color">0</span>
+      <span class="re-vs">—</span>
+      <span id="re-def" class="re-sc def-color">0</span>
+    </div>
+
+    <div id="re-you" class="hidden"></div>
+
+    <div id="re-teams">
+      <div class="re-col">
+        <div class="re-col-title atk-color">⚔ ATTACKERS</div>
+        <div class="re-col-head"><span>Player</span><span>K</span><span>D</span><span>EXP</span></div>
+        <div id="re-atk-list"></div>
+      </div>
+      <div class="re-col">
+        <div class="re-col-title def-color">🛡 DEFENDERS</div>
+        <div class="re-col-head"><span>Player</span><span>K</span><span>D</span><span>EXP</span></div>
+        <div id="re-def-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
