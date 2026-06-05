@@ -324,7 +324,7 @@ end)
 CreateThread(function()
     while true do
         Wait(500)
-        if not inMatch or myTeam ~= 1 or not currentBase then goto objnext end
+        if not inMatch or (myTeam ~= 1 and myTeam ~= 2) or not currentBase then goto objnext end
 
         local ped  = PlayerPedId()
         local pos  = GetEntityCoords(ped)
@@ -371,8 +371,8 @@ CreateThread(function()
             end
         end
 
-        -- Objective marker (attackers only)
-        if myTeam == 1 and currentBase.objective then
+        -- Objective marker (both teams)
+        if (myTeam == 1 or myTeam == 2) and currentBase.objective then
             local obj  = currentBase.objective
             local dist = #(vector3(pos.x, pos.y, pos.z) - obj)
             if dist < 50.0 then
@@ -413,6 +413,9 @@ RegisterNetEvent("ad:roundEnd", function(winnerTeam, score, matchOver, playerSta
     NUI({ action = "roundEnd", winnerTeam = winnerTeam, score = score,
           matchOver = matchOver, playerStats = playerStats,
           atkList = atkList, defList = defList })
+    nearObj   = false
+    capActive = false
+    NUI({ action = "nearObjective", near = false })
     StripWeapons()
 end)
 
