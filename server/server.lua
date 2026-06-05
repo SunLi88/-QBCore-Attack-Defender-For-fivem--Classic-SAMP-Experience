@@ -565,7 +565,7 @@ RegisterNetEvent("ad:server:objectiveEnter", function()
     if Game.phase ~= "active" or Game.roundEnding then return end
     if Game.capRunning then return end
     local d = Players[src]
-    if not d or d.team ~= 1 or not d.alive then return end
+    if not d or (d.team ~= 1 and d.team ~= 2) or not d.alive then return end
 
     Game.capRunning  = true
     Game.capTeam     = 1
